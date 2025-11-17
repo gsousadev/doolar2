@@ -1,10 +1,10 @@
-package tasklist
+package task_list
 
 import (
 	"errors"
 	"slices"
 
-	"github.com/gsousadev/doolar-golang/internal/domain/entity"
+	"github.com/gsousadev/doolar2/internal/domain/entity"
 )
 
 type Status string

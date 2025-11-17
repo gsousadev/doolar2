@@ -1,4 +1,4 @@
-package tasklist
+package task_list
 
 import (
 	"testing"
@@ -12,7 +12,7 @@ func TestNewTaskList(t *testing.T) {
 	title := "My Task List"
 
 	// Act
-	taskList := NewTaskList(title)
+	taskList := NewTaskListEntity(title)
 
 	// Assert
 	assert.Equal(t, title, taskList.Title, "Expected Title to match")
@@ -22,7 +22,7 @@ func TestNewTaskList(t *testing.T) {
 
 func TestAddTask(t *testing.T) {
 	// Arrange
-	taskList := NewTaskList("Test List")
+	taskList := NewTaskListEntity("Test List")
 	task := NewTaskEntity("Task 1", "Description 1")
 
 	// Act
@@ -35,7 +35,7 @@ func TestAddTask(t *testing.T) {
 
 func TestAddMultipleTasks(t *testing.T) {
 	// Arrange
-	taskList := NewTaskList("Test List")
+	taskList := NewTaskListEntity("Test List")
 	task1 := NewTaskEntity("Task 1", "Description 1")
 	task2 := NewTaskEntity("Task 2", "Description 2")
 	task3 := NewTaskEntity("Task 3", "Description 3")
@@ -54,7 +54,7 @@ func TestAddMultipleTasks(t *testing.T) {
 
 func TestMultipleTypesOfTasks(t *testing.T) {
 	// Arrange
-	taskList := NewTaskList("Mixed Task List")
+	taskList := NewTaskListEntity("Mixed Task List")
 	task1 := NewTaskEntity("Simple Task", "A simple task")
 	task2 := NewTimedTaskEntity("Timed Task", "A task with time limit", time.Now(), time.Now().Add(2*time.Hour))
 

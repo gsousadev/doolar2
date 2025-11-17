@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/gsousadev/doolar-golang/internal/application"
+	"github.com/gsousadev/doolar2/internal/application"
 	"github.com/spf13/cobra"
 )
 

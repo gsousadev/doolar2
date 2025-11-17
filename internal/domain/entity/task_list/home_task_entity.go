@@ -1,6 +1,6 @@
-package tasklist
+package task_list
 
-import "github.com/gsousadev/doolar-golang/internal/domain/entity"
+import "github.com/gsousadev/doolar2/internal/domain/entity"
 
 type HomeTask struct {
 	*TaskEntity

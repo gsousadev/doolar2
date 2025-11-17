@@ -1,4 +1,4 @@
-package tasklist
+package task_list
 
 import (
 	"testing"

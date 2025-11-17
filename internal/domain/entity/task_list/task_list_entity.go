@@ -1,21 +1,21 @@
-package tasklist
+package task_list
 
-import "github.com/gsousadev/doolar-golang/internal/domain/entity"
+import "github.com/gsousadev/doolar2/internal/domain/entity"
 
-type TaskList struct {
+type TaskListEntity struct {
 	*entity.Entity
 	Title string
 	Tasks []ITask
 }
 
-func NewTaskList(title string) *TaskList {
-	return &TaskList{
+func NewTaskListEntity(title string) *TaskListEntity {
+	return &TaskListEntity{
 		Entity: entity.NewEntity(),
 		Title:  title,
 		Tasks:  []ITask{},
 	}
 }
 
-func (tl *TaskList) AddTask(task ITask) {
+func (tl *TaskListEntity) AddTask(task ITask) {
 	tl.Tasks = append(tl.Tasks, task)
 }

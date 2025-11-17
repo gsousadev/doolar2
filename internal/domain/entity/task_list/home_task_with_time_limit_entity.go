@@ -1,9 +1,9 @@
-package tasklist
+package task_list
 
 import (
 	"time"
 
-	"github.com/gsousadev/doolar-golang/internal/domain/entity"
+	"github.com/gsousadev/doolar2/internal/domain/entity"
 )
 
 type TimedHomeTask struct {

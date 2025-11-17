@@ -21,7 +21,7 @@
 package entity
 
 import (
-	"github.com/gsousadev/doolar-golang/internal/domain/valueObject"
+	"github.com/gsousadev/doolar2/internal/domain/valueObject"
 )
 
 type Room struct {

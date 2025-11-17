@@ -21,7 +21,7 @@ package entity
 import (
 	"time"
 
-	"github.com/gsousadev/doolar-golang/internal/domain/valueObject"
+	"github.com/gsousadev/doolar2/internal/domain/valueObject"
 )
 
 type Rule struct {
