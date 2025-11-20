@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MVP de Voz</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      max-width: 480px;
+      margin: auto;
+    }
+
+    button {
+      padding: 15px;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    #recordBtn.rec {
+      background-color: #e53935;
+      color: white;
+    }
+
+    #recordBtn:not(.rec) {
+      background-color: #43a047;
+      color: white;
+    }
+
+    .log {
+      background: #f5f5f5;
+      padding: 15px;
+      border-radius: 8px;
+      min-height: 100px;
+      white-space: pre-line;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>MVP — Captura de Voz</h2>
+
+  <button id="recordBtn">🎤 Iniciar gravação</button>
+  <div>Tempo: <span id="timer">0s</span></div>
+
+  <button id="sendBtn" disabled>📤 Enviar áudio</button>
+
+  <h3>Log</h3>
+  <div class="log" id="log">Aguardando ações...</div>
+
+  <script>
+    let mediaRecorder;
+    let audioChunks = [];
+    let isRecording = false;
+    let startTime;
+    let timerInterval;
+
+    const recordBtn = document.getElementById("recordBtn");
+    const sendBtn = document.getElementById("sendBtn");
+    const timerEl = document.getElementById("timer");
+    const logEl = document.getElementById("log");
+
+    recordBtn.addEventListener("click", async () => {
+      if (!isRecording) {
+        // Solicita permissão do microfone
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+        mediaRecorder = new MediaRecorder(stream);
+
+        audioChunks = [];
+        mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+
+        mediaRecorder.start();
+        isRecording = true;
+        recordBtn.innerText = "🛑 Parar gravação";
+        recordBtn.classList.add("rec");
+
+        startTime = Date.now();
+        timerInterval = setInterval(() => {
+          const seconds = Math.floor((Date.now() - startTime) / 1000);
+          timerEl.innerText = seconds + "s";
+        }, 200);
+
+        log("Gravando...");
+
+      } else {
+        mediaRecorder.stop();
+        isRecording = false;
+        recordBtn.innerText = "🎤 Iniciar gravação";
+        recordBtn.classList.remove("rec");
+
+        clearInterval(timerInterval);
+
+        sendBtn.disabled = false;
+        log("Gravação finalizada. Pronto para enviar.");
+      }
+    });
+
+    sendBtn.addEventListener("click", async () => {
+      const blob = new Blob(audioChunks, { type: "audio/webm" });
+      const file = new File([blob], "audio.webm");
+
+      const formData = new FormData();
+      formData.append("audio", file);
+
+      log("Enviando...");
+
+      const res = await fetch("http://localhost:8080/audio", {
+        method: "POST",
+        body: formData
+      });
+
+      const result = await res.text();
+      log("Resposta do servidor:\n\n" + result);
+
+      sendBtn.disabled = true;
+    });
+
+    function log(text) {
+      logEl.innerText = text;
+    }
+  </script>
+
+</body>
+</html>

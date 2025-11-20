@@ -1,0 +1,43 @@
+services:
+  app:
+    container_name: app
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    volumes:
+      - ./app:/app
+      - ./app/uploads:/app/uploads
+    ports:
+      - "8080:8080"
+    environment:
+      - ENV=production
+      - MONGO_URI=mongodb://db:27017
+      - DB_NAME=doolar
+    depends_on:
+      - db
+  
+  db:
+    container_name: db
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://root:root@db:27017/
+      ME_CONFIG_BASICAUTH_ENABLED: true
+      ME_CONFIG_BASICAUTH_USERNAME: root
+      ME_CONFIG_BASICAUTH_PASSWORD: root
+
+networks:
+  default:
+    driver: bridge
+
+volumes:
+  db-data: {}
