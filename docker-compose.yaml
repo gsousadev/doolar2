@@ -16,6 +16,22 @@ services:
     depends_on:
       - db
   
+  whisper-asr:
+    build: 
+      context: ./whisper
+      dockerfile: ./Dockerfile
+    container_name: whisper-asr
+    environment:
+      WHISPER_MODEL: small
+      WHISPER_LANGUAGE: pt
+      WHISPER_DEVICE: cpu
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    volumes:
+      - ./whisper/app:/app
+    working_dir: /app
+  
   db:
     container_name: db
     image: mongo
