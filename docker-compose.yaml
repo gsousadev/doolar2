@@ -32,6 +32,18 @@ services:
       - ./whisper/app:/app
     working_dir: /app
   
+  ollama:
+    build:
+      context: ./ia-formatter
+      dockerfile: Dockerfile
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+
+
   db:
     container_name: db
     image: mongo
@@ -57,3 +69,4 @@ networks:
 
 volumes:
   db-data: {}
+  ollama_data: {}

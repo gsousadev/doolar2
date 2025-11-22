@@ -96,6 +96,25 @@ func getEnv(key, defaultValue string) string {
 func SetupRouter(handler *presentation.TaskManagerHandler) http.Handler {
 	mux := http.NewServeMux()
 
+	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte("OK"))
+
+		} else {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+
+	})
+
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			http.ServeFile(w, r, "/app/cmd/http/html/index.html")
+		} else {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	})
+
 	// Task Lists
 	mux.HandleFunc("/task-lists", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodPost {
