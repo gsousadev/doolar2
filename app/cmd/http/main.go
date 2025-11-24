@@ -46,11 +46,12 @@ func main() {
 	// 9. Configuração do servidor
 	port := getEnv("PORT", "8080")
 	server := &http.Server{
-		Addr:         ":" + port,
-		Handler:      router,
-		ReadTimeout:  15 * time.Second,
-		WriteTimeout: 15 * time.Second,
-		IdleTimeout:  60 * time.Second,
+		Addr:              ":" + port,
+		Handler:           router,
+		ReadTimeout:       30 * time.Second,  // Aumentado de 15s
+		WriteTimeout:      300 * time.Second, // 5 minutos para streaming
+		IdleTimeout:       120 * time.Second, // Aumentado de 60s
+		ReadHeaderTimeout: 10 * time.Second,  // Timeout para ler headers
 	}
 
 	c := cors.New(cors.Options{

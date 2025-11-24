@@ -33,12 +33,58 @@
       color: white;
     }
 
+    #sendBtn, #uploadBtn {
+      background-color: #1e88e5;
+      color: white;
+    }
+
+    #sendBtn:disabled, #uploadBtn:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    .section {
+      border: 1px solid #ddd;
+      padding: 15px;
+      border-radius: 8px;
+      background: #fafafa;
+    }
+
+    .section h3 {
+      margin-top: 0;
+    }
+
+    #fileInput {
+      display: none;
+    }
+
+    .file-select-btn {
+      background-color: #43a047;
+      color: white;
+      padding: 15px;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      display: block;
+      width: 100%;
+      text-align: center;
+    }
+
+    .file-name {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #666;
+    }
+
     .log {
       background: #f5f5f5;
       padding: 15px;
       border-radius: 8px;
       min-height: 100px;
       white-space: pre-line;
+      max-height: 400px;
+      overflow-y: auto;
     }
   </style>
 </head>
@@ -46,10 +92,22 @@
 
   <h2>MVP — Captura de Voz</h2>
 
-  <button id="recordBtn">🎤 Iniciar gravação</button>
-  <div>Tempo: <span id="timer">0s</span></div>
+  <!-- SEÇÃO 1: GRAVAR ÁUDIO -->
+  <div class="section">
+    <h3>🎤 Gravar Áudio</h3>
+    <button id="recordBtn">🎤 Iniciar gravação</button>
+    <div>Tempo: <span id="timer">0s</span></div>
+    <button id="sendBtn" disabled>📤 Enviar gravação</button>
+  </div>
 
-  <button id="sendBtn" disabled>📤 Enviar áudio</button>
+  <!-- SEÇÃO 2: UPLOAD DE ARQUIVO -->
+  <div class="section">
+    <h3>📁 Upload de Arquivo</h3>
+    <input type="file" id="fileInput" accept="audio/*" />
+    <label for="fileInput" class="file-select-btn">📂 Selecionar arquivo de áudio</label>
+    <div class="file-name" id="fileName">Nenhum arquivo selecionado</div>
+    <button id="uploadBtn" disabled>📤 Enviar arquivo</button>
+  </div>
 
   <h3>Log</h3>
   <div class="log" id="log">Aguardando ações...</div>
@@ -60,87 +118,163 @@
   let isRecording = false;
   let startTime;
   let timerInterval;
+  let selectedFile = null;
 
   const recordBtn = document.getElementById("recordBtn");
   const sendBtn = document.getElementById("sendBtn");
+  const fileInput = document.getElementById("fileInput");
+  const uploadBtn = document.getElementById("uploadBtn");
+  const fileNameEl = document.getElementById("fileName");
   const timerEl = document.getElementById("timer");
   const logEl = document.getElementById("log");
 
+  function addLog(message) {
+    const timestamp = new Date().toLocaleTimeString();
+    logEl.innerText = `[${timestamp}] ${message}\n` + logEl.innerText;
+  }
+
+  // ===== GRAVAÇÃO DE ÁUDIO =====
   recordBtn.addEventListener("click", async () => {
     if (!isRecording) {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorder = new MediaRecorder(stream);
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
 
-      audioChunks = [];
-      mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+        audioChunks = [];
+        mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
 
-      mediaRecorder.start();
-      isRecording = true;
-      recordBtn.innerText = "🛑 Parar gravação";
-      recordBtn.classList.add("rec");
+        mediaRecorder.start();
+        isRecording = true;
+        recordBtn.innerText = "🛑 Parar gravação";
+        recordBtn.classList.add("rec");
 
-      startTime = Date.now();
-      timerInterval = setInterval(() => {
-        const seconds = Math.floor((Date.now() - startTime) / 1000);
-        timerEl.innerText = seconds + "s";
-      }, 200);
+        startTime = Date.now();
+        timerInterval = setInterval(() => {
+          const seconds = Math.floor((Date.now() - startTime) / 1000);
+          timerEl.innerText = seconds + "s";
+        }, 200);
 
-      console.log("Gravando...");
+        addLog("🎤 Gravação iniciada...");
+
+      } catch (err) {
+        addLog("❌ Erro ao acessar microfone: " + err.message);
+      }
 
     } else {
       mediaRecorder.stop();
       isRecording = false;
       recordBtn.innerText = "🎤 Iniciar gravação";
       recordBtn.classList.remove("rec");
-      console.log("Gravação parada.");
       clearInterval(timerInterval);
 
       sendBtn.disabled = false;
-      console.log("Gravação finalizada. Pronto para enviar.");
+      addLog("✅ Gravação finalizada. Pronto para enviar.");
     }
   });
 
+  // ===== SELEÇÃO DE ARQUIVO =====
+  fileInput.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      selectedFile = file;
+      fileNameEl.innerText = `Arquivo: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+      uploadBtn.disabled = false;
+      addLog(`📁 Arquivo selecionado: ${file.name}`);
+    } else {
+      selectedFile = null;
+      fileNameEl.innerText = "Nenhum arquivo selecionado";
+      uploadBtn.disabled = true;
+    }
+  });
 
-  // 🔥🔥🔥 AQUI COMEÇA O STREAMING 🔥🔥🔥
+  // ===== ENVIAR GRAVAÇÃO =====
   sendBtn.addEventListener("click", async () => {
     const blob = new Blob(audioChunks, { type: "audio/webm" });
     const file = new File([blob], "audio.webm");
 
+    await sendAudio(file, "gravação");
+    
+    sendBtn.disabled = true;
+    timerEl.innerText = "0s";
+  });
+
+  // ===== ENVIAR ARQUIVO =====
+  uploadBtn.addEventListener("click", async () => {
+    if (!selectedFile) {
+      addLog("❌ Nenhum arquivo selecionado");
+      return;
+    }
+
+    await sendAudio(selectedFile, "arquivo");
+    
+    uploadBtn.disabled = true;
+    fileInput.value = "";
+    selectedFile = null;
+    fileNameEl.innerText = "Nenhum arquivo selecionado";
+  });
+
+  // ===== FUNÇÃO COMUM DE ENVIO =====
+  async function sendAudio(file, source) {
     const formData = new FormData();
     formData.append("audio", file);
 
-    console.log("Enviando áudio...");
+    addLog(`📤 Enviando ${source}...`);
 
-    const res = await fetch("http://localhost:8080/audio", {
-      method: "POST",
-      body: formData
-    });
+    try {
+      const res = await fetch("http://localhost:8080/audio", {
+        method: "POST",
+        body: formData
+      });
 
-    // ⬇ STREAM: pega o reader da resposta
-    const reader = res.body.getReader();
-    const decoder = new TextDecoder();
-
-    console.log("Processando resposta...");
-
-    let fullText = "";
-
-    while (true) {
-      const { value, done } = await reader.read();
-
-      if (done) {
-        console.log("Transcrição finalizada:\n\n" + fullText);
-        break;
+      if (!res.ok) {
+        addLog(`❌ Erro HTTP: ${res.status} ${res.statusText}`);
+        return;
       }
 
-      const chunk = decoder.decode(value);
-      fullText += chunk;
+      addLog("✅ Áudio enviado. Processando...");
 
-      // Atualiza em tempo real
-      console.log(fullText);
+      // ⬇ STREAM: pega o reader da resposta
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+
+      let fullText = "";
+
+      while (true) {
+        const { value, done } = await reader.read();
+
+        if (done) {
+          addLog("✅ Processamento finalizado!");
+          break;
+        }
+
+        const chunk = decoder.decode(value, { stream: true });
+        const lines = chunk.split('\n').filter(line => line.trim());
+
+        for (const line of lines) {
+          try {
+            const data = JSON.parse(line);
+            
+            if (data.error) {
+              addLog(`❌ Erro: ${data.error}`);
+            } else if (data.response) {
+              fullText += data.response;
+              logEl.innerText = `📝 Resposta:\n${fullText}`;
+            }
+            
+            if (data.done) {
+              addLog("✅ Stream finalizado");
+            }
+          } catch (e) {
+            // Linha não é JSON válido, ignora
+            console.warn("Linha não-JSON ignorada:", line);
+          }
+        }
+      }
+
+    } catch (err) {
+      addLog(`❌ Erro ao enviar: ${err.message}`);
     }
-
-    sendBtn.disabled = true;
-  });
+  }
 
 </script>
 
