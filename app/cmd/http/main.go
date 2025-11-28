@@ -9,9 +9,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/gsousadev/doolar2/internal/application"
-	"github.com/gsousadev/doolar2/internal/infrastructure/database"
-	"github.com/gsousadev/doolar2/internal/presentation"
+	"github.com/gsousadev/doolar2/internal/tasks/application"
+	"github.com/gsousadev/doolar2/internal/tasks/infrastructure/database"
+	"github.com/gsousadev/doolar2/internal/tasks/presentation"
 	"github.com/rs/cors"
 )
 
