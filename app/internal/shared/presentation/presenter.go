@@ -28,3 +28,13 @@ func RespondSuccess(w http.ResponseWriter, statusCode int, message string, data 
 		Data:    data,
 	})
 }
+
+type ErrorResponse struct {
+	Error   string `json:"error"`
+	Message string `json:"message"`
+}
+
+type SuccessResponse struct {
+	Message string      `json:"message"`
+	Data    interface{} `json:"data"`
+}

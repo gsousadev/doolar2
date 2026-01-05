@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	database "github.com/gsousadev/doolar2/internal/shared/infrastructure/database"
 	task_list "github.com/gsousadev/doolar2/internal/tasks/domain/entity"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -12,13 +13,13 @@ import (
 )
 
 func setupMongoTestDB(t *testing.T) *TaskListMongoRepository {
-	cfg := MongoConfig{
+	cfg := database.MongoConfig{
 		URI:      "mongodb://localhost:27017",
 		Database: "doolar_test",
 		Timeout:  10 * time.Second,
 	}
 
-	client, err := NewMongoConnection(cfg)
+	client, err := database.NewMongoConnection(cfg)
 	if err != nil {
 		t.Skip("MongoDB not available for integration tests")
 	}

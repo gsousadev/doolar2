@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"github.com/gsousadev/doolar2/internal/house/application"

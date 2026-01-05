@@ -1,4 +1,4 @@
-package application
+package ports
 
 import task_list "github.com/gsousadev/doolar2/internal/tasks/domain/entity"
 
