@@ -1,4 +1,4 @@
-package database
+package mongo
 
 import (
 	"context"
@@ -22,7 +22,7 @@ type TaskListMongoRepository struct {
 }
 
 // NewTaskListMongoRepository cria um novo repositório MongoDB
-func NewTaskListMongoRepository(client *mongo.Client, dbName string) repository.TaskListRepository {
+func NewTaskListMongoRepository(client *mongo.Client, dbName string) repository.ITaskListRepository {
 	return &TaskListMongoRepository{
 		client:         client,
 		collection:     client.Database(dbName).Collection("task_lists"),

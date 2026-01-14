@@ -1,4 +1,4 @@
-package task_list
+package entity
 
 import (
 	"errors"
@@ -27,6 +27,9 @@ type ITask interface {
 	entity.IEntity
 	ChangeStatus(newStatus Status) error
 	GetStatus() Status
+	IsCompleted() bool
+	GetTitle() string
+	GetDescription() string
 }
 
 type TaskEntity struct {
@@ -58,4 +61,16 @@ func (t *TaskEntity) ChangeStatus(newStatus Status) error {
 
 func (t *TaskEntity) GetStatus() Status {
 	return t.Status
+}
+
+func (t *TaskEntity) IsCompleted() bool {
+	return t.Status == StatusCompleted
+}
+
+func (t *TaskEntity) GetTitle() string {
+	return t.Title
+}
+
+func (t *TaskEntity) GetDescription() string {
+	return t.Description
 }

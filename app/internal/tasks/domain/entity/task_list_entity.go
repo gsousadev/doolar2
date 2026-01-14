@@ -1,4 +1,4 @@
-package task_list
+package entity
 
 import "github.com/gsousadev/doolar2/internal/shared/domain/entity"
 

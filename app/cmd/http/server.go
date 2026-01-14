@@ -1,4 +1,4 @@
-package cmd
+package http
 
 import (
 	"context"
@@ -9,16 +9,24 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/gsousadev/doolar2/internal/tasks/presentation"
+	"github.com/gsousadev/doolar2/internal"
+	sharedPresentation "github.com/gsousadev/doolar2/internal/shared/presentation"
+	taskPresentation "github.com/gsousadev/doolar2/internal/tasks/presentation/http"
+	"github.com/gsousadev/doolar2/tools"
 	"github.com/rs/cors"
 )
 
 func StartServer() {
 
-	router := setupRouter(taskManagerHandler)
+	compositionRoot := internal.NewCompositionRoot()
+
+	taskHandler := taskPresentation.NewTaskManagerHandler(compositionRoot.TaskListService)
+	healthHandler := sharedPresentation.NewHealthHandler()
+
+	router := setupRouter(taskHandler, healthHandler)
 
 	// 9. Configuração do servidor
-	port := getEnv("PORT", "8080")
+	port := tools.GetEnv("PORT", "8080")
 	server := &http.Server{
 		Addr:              ":" + port,
 		Handler:           router,
@@ -60,108 +68,11 @@ func StartServer() {
 }
 
 // SetupRouter configura as rotas HTTP
-func setupRouter(handler *presentation.TaskManagerHandler) http.Handler {
+func setupRouter(taskHandler *taskPresentation.TaskManagerHandler, healthHandler *sharedPresentation.HealthHandler) http.Handler {
 
-	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodGet {
-			w.WriteHeader(http.StatusOK)
-			w.Write([]byte("OK"))
-
-		} else {
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		}
-
-	})
-
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodGet {
-			http.ServeFile(w, r, "/app/cmd/http/html/index.html")
-		} else {
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		}
-	})
-
-	// Task Lists
-	mux.HandleFunc("/task-lists", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodPost {
-			handler.CreateTaskList(w, r)
-		} else {
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		}
-	})
-
-	mux.HandleFunc("/audio", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodPost {
-			presentation.UploadAudio(w, r)
-		} else {
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		}
-	})
-
-	mux.HandleFunc("/task-lists/", func(w http.ResponseWriter, r *http.Request) {
-		// Verifica se é uma rota específica
-		if r.URL.Path == "/task-lists/" {
-			http.Error(w, "Task list ID required", http.StatusBadRequest)
-			return
-		}
-
-		// /task-lists/{id}
-		if r.Method == http.MethodGet && !hasSubpath(r.URL.Path, "/task-lists/", "tasks", "statistics") {
-			handler.GetTaskList(w, r)
-			return
-		}
-
-		// /task-lists/{id}
-		if r.Method == http.MethodDelete && !hasSubpath(r.URL.Path, "/task-lists/", "tasks", "statistics") {
-			handler.DeleteTaskList(w, r)
-			return
-		}
-
-		// /task-lists/{id}/tasks
-		if r.Method == http.MethodPost && containsPath(r.URL.Path, "/tasks") && !containsPath(r.URL.Path, "/pending") && !containsPath(r.URL.Path, "/status") {
-			handler.AddTaskToList(w, r)
-			return
-		}
-
-		// /task-lists/{id}/tasks/pending
-		if r.Method == http.MethodGet && containsPath(r.URL.Path, "/tasks/pending") {
-			handler.GetPendingTasks(w, r)
-			return
-		}
-
-		// /task-lists/{id}/tasks/{taskId}/status
-		if r.Method == http.MethodPatch && containsPath(r.URL.Path, "/tasks/") && containsPath(r.URL.Path, "/status") {
-			handler.UpdateTaskStatus(w, r)
-			return
-		}
-
-		// /task-lists/{id}/statistics
-		if r.Method == http.MethodGet && containsPath(r.URL.Path, "/statistics") {
-			handler.GetStatistics(w, r)
-			return
-		}
-
-		http.Error(w, "Not found", http.StatusNotFound)
-	})
+	mux := http.NewServeMux()
+	mux.HandleFunc("GET /health", healthHandler.HealthCheckHandler)
+	mux.HandleFunc("POST /task-lists", taskHandler.CreateTaskList)
 
 	return mux
-}
-
-// Helper para verificar se o path contém um subpath específico
-func hasSubpath(path string, prefix string, subpaths ...string) bool {
-	for _, sub := range subpaths {
-		if containsPath(path, "/"+sub) {
-			return true
-		}
-	}
-	return false
-}
-
-func containsPath(path, substring string) bool {
-	for i := 0; i < len(path)-len(substring)+1; i++ {
-		if path[i:i+len(substring)] == substring {
-			return true
-		}
-	}
-	return false
 }
