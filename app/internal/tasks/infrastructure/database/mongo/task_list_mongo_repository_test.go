@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	database "github.com/gsousadev/doolar2/internal/shared/infrastructure/database"
-	task_list "github.com/gsousadev/doolar2/internal/tasks/domain/entity"
+	database "github.com/gsousadev/doolar-golang/internal/shared/infrastructure/database"
+	task_list "github.com/gsousadev/doolar-golang/internal/tasks/domain/entity"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.mongodb.org/mongo-driver/bson"
@@ -14,7 +14,7 @@ import (
 
 func setupMongoTestDB(t *testing.T) *TaskListMongoRepository {
 	cfg := database.MongoConfig{
-		URI:      "mongodb://localhost:27017",
+		URI:      "mongodb://db:27017",
 		Database: "doolar_test",
 		Timeout:  10 * time.Second,
 	}
@@ -42,9 +42,9 @@ func TestMongoRepository_UnitOfWork_Flush(t *testing.T) {
 	}()
 
 	// Arrange
-	taskList1 := task_list.NewTaskListEntity("Lista MongoDB 1")
-	taskList2 := task_list.NewTaskListEntity("Lista MongoDB 2")
-	taskList3 := task_list.NewTaskListEntity("Lista MongoDB 3")
+	taskList1 := task_list.NewTaskListEntity("Test List", "Descrição de task list 1")
+	taskList2 := task_list.NewTaskListEntity("Test List", "Descrição de task list 2")
+	taskList3 := task_list.NewTaskListEntity("Test List", "Descrição de task list 3")
 
 	// Act - Adiciona operações à pilha (NÃO executa ainda)
 	err := repo.Add(taskList1)
@@ -84,8 +84,8 @@ func TestMongoRepository_UnitOfWork_Rollback(t *testing.T) {
 	}()
 
 	// Arrange
-	taskList1 := task_list.NewTaskListEntity("Lista Válida")
-	taskList2 := task_list.NewTaskListEntity("Lista que será adicionada depois")
+	taskList1 := task_list.NewTaskListEntity("Test List", "Descrição de task list")
+	taskList2 := task_list.NewTaskListEntity("Test List", "Descrição de task list 2")
 
 	// Persiste a primeira
 	repo.Add(taskList1)
@@ -114,8 +114,8 @@ func TestMongoRepository_MixedOperations(t *testing.T) {
 	}()
 
 	// Arrange
-	taskList1 := task_list.NewTaskListEntity("Original MongoDB")
-	taskList2 := task_list.NewTaskListEntity("To Delete MongoDB")
+	taskList1 := task_list.NewTaskListEntity("Test List", "Descrição de task list")
+	taskList2 := task_list.NewTaskListEntity("Test List", "Descrição de task list delete")
 
 	// Act - Adiciona e executa
 	repo.Add(taskList1)
@@ -149,7 +149,7 @@ func TestMongoRepository_FindByID(t *testing.T) {
 	}()
 
 	// Arrange
-	taskList := task_list.NewTaskListEntity("Find Me MongoDB")
+	taskList := task_list.NewTaskListEntity("Test List", "Descrição de task list")
 	repo.Add(taskList)
 	repo.Flush()
 
@@ -184,7 +184,7 @@ func TestMongoRepository_Clear(t *testing.T) {
 	}()
 
 	// Arrange
-	taskList := task_list.NewTaskListEntity("Lista MongoDB")
+	taskList := task_list.NewTaskListEntity("Test List", "Descrição de task list")
 	repo.Add(taskList)
 
 	// Assert - Tem 1 operação pendente

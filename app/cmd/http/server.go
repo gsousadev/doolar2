@@ -1,4 +1,4 @@
-package http
+package main
 
 import (
 	"context"
@@ -9,10 +9,10 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/gsousadev/doolar2/internal"
-	sharedPresentation "github.com/gsousadev/doolar2/internal/shared/presentation"
-	taskPresentation "github.com/gsousadev/doolar2/internal/tasks/presentation/http"
-	"github.com/gsousadev/doolar2/tools"
+	"github.com/gsousadev/doolar-golang/internal"
+	sharedPresentation "github.com/gsousadev/doolar-golang/internal/shared/presentation"
+	taskPresentation "github.com/gsousadev/doolar-golang/internal/tasks/presentation/http"
+	"github.com/gsousadev/doolar-golang/tools"
 	"github.com/rs/cors"
 )
 

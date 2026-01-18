@@ -3,9 +3,9 @@ package application
 import (
 	"errors"
 
-	"github.com/gsousadev/doolar2/internal/tasks/application/dtos"
-	task_list "github.com/gsousadev/doolar2/internal/tasks/domain/entity"
-	"github.com/gsousadev/doolar2/internal/tasks/domain/repository"
+	"github.com/gsousadev/doolar-golang/internal/tasks/application/dtos"
+	task_list "github.com/gsousadev/doolar-golang/internal/tasks/domain/entity"
+	"github.com/gsousadev/doolar-golang/internal/tasks/domain/repository"
 )
 
 var (
@@ -27,7 +27,8 @@ func NewTaskManagerService(repo repository.ITaskListRepository) *TaskManagerServ
 
 // CreateTaskListDTO - DTO para criar uma lista
 type CreateTaskListDTO struct {
-	Title string `json:"title" validate:"required"`
+	Title       string `json:"title" validate:"required"`
+	Description string `json:"description" validate:"required"`
 }
 
 // CreateTaskDTO - DTO para criar uma task
@@ -38,7 +39,7 @@ type CreateTaskDTO struct {
 
 // CreateTaskList cria uma nova lista de tarefas
 func (s *TaskManagerService) CreateTaskList(dto dtos.CreateTaskListDTO) (*task_list.TaskListEntity, error) {
-	taskList := task_list.NewTaskListEntity(dto.Title)
+	taskList := task_list.NewTaskListEntity(dto.Title, dto.Description)
 
 	if err := s.repo.Add(taskList); err != nil {
 		return nil, err

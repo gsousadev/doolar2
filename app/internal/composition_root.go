@@ -3,10 +3,10 @@ package internal
 import (
 	"time"
 
-	"github.com/gsousadev/doolar2/internal/shared/infrastructure/database"
-	"github.com/gsousadev/doolar2/internal/tasks/application"
-	"github.com/gsousadev/doolar2/internal/tasks/application/contracts"
-	"github.com/gsousadev/doolar2/internal/tasks/infrastructure/database/mongo"
+	"github.com/gsousadev/doolar-golang/internal/shared/infrastructure/database"
+	"github.com/gsousadev/doolar-golang/internal/tasks/application"
+	"github.com/gsousadev/doolar-golang/internal/tasks/application/contracts"
+	"github.com/gsousadev/doolar-golang/internal/tasks/infrastructure/database/mongo"
 	mongo_driver "go.mongodb.org/mongo-driver/mongo"
 )
 

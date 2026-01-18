@@ -3,12 +3,13 @@ package mongo
 import (
 	"context"
 	"errors"
+	"log"
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/gsousadev/doolar2/internal/shared/domain/entity"
-	task_list "github.com/gsousadev/doolar2/internal/tasks/domain/entity"
-	"github.com/gsousadev/doolar2/internal/tasks/domain/repository"
+	"github.com/gsousadev/doolar-golang/internal/shared/domain/entity"
+	task_list "github.com/gsousadev/doolar-golang/internal/tasks/domain/entity"
+	"github.com/gsousadev/doolar-golang/internal/tasks/domain/repository"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -159,6 +160,8 @@ func (r *TaskListMongoRepository) Flush() error {
 	// Inicia uma sessão
 	session, err := r.client.StartSession()
 	if err != nil {
+
+		log.Fatal(err)
 		return err
 	}
 	defer session.EndSession(ctx)
@@ -167,6 +170,8 @@ func (r *TaskListMongoRepository) Flush() error {
 	_, err = session.WithTransaction(ctx, func(sessCtx mongo.SessionContext) (interface{}, error) {
 		for _, operation := range r.operations {
 			if err := operation(sessCtx); err != nil {
+
+				log.Fatal(err)
 				return nil, err // Rollback automático
 			}
 		}
@@ -174,6 +179,7 @@ func (r *TaskListMongoRepository) Flush() error {
 	})
 
 	if err != nil {
+		log.Fatal(err)
 		return err
 	}
 

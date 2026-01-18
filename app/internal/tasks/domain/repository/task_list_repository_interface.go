@@ -1,6 +1,6 @@
 package repository
 
-import task_list "github.com/gsousadev/doolar2/internal/tasks/domain/entity"
+import task_list "github.com/gsousadev/doolar-golang/internal/tasks/domain/entity"
 
 type ITaskListRepository interface {
 	Add(t *task_list.TaskListEntity) error

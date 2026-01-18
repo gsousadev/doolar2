@@ -65,7 +65,7 @@ app/
 
 ### 1. Clone o repositório:
 ```bash
-git clone https://github.com/gsousadev/doolar2.git
+git clone https://github.com/gsousadev/doolar-golang.git
 cd doolar-golang/app
 ```
 

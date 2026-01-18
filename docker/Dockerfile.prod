@@ -21,6 +21,6 @@ WORKDIR /root/
 # Copiar binário da etapa de build
 COPY --from=builder /app/doolar-api .
 
-EXPOSE 8080
+EXPOSE 8090
 
 CMD ["./doolar-api"]

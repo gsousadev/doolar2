@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/gsousadev/doolar2/internal/tasks/application/contracts"
-	"github.com/gsousadev/doolar2/internal/tasks/application/dtos"
-	"github.com/gsousadev/doolar2/internal/tasks/domain/entity"
+	"github.com/gsousadev/doolar-golang/internal/tasks/application/contracts"
+	"github.com/gsousadev/doolar-golang/internal/tasks/application/dtos"
+	"github.com/gsousadev/doolar-golang/internal/tasks/domain/entity"
 )
 
 type TaskManagerHandler struct {
@@ -22,7 +22,8 @@ func NewTaskManagerHandler(service contracts.ITaskManagerService) *TaskManagerHa
 
 // CreateTaskListRequest representa a requisição de criação
 type CreateTaskListRequest struct {
-	Title string `json:"title"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
 }
 
 // ErrorResponse representa uma resposta de erro
@@ -51,7 +52,8 @@ func (h *TaskManagerHandler) CreateTaskList(w http.ResponseWriter, r *http.Reque
 	}
 
 	dto := dtos.CreateTaskListDTO{
-		Title: req.Title,
+		Title:       req.Title,
+		Description: req.Description,
 	}
 
 	taskList, err := h.service.CreateTaskList(dto)

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"slices"
 
-	"github.com/gsousadev/doolar2/internal/shared/domain/entity"
+	"github.com/gsousadev/doolar-golang/internal/shared/domain/entity"
 )
 
 type Status string

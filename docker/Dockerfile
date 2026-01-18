@@ -11,4 +11,4 @@ COPY app/ ./
 
 EXPOSE 8080
 
-CMD ["go", "run", "./cmd/http"]
+CMD ["tail","-f","/dev/null"]

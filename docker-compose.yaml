@@ -3,64 +3,47 @@ services:
     container_name: app
     build:
       context: .
-      dockerfile: ./Dockerfile
+      dockerfile: ./docker/Dockerfile
     volumes:
       - ./app:/app
     ports:
       - "8080:8080"
     environment:
+      - PORT=8080
       - ENV=production
-      - MONGO_URI=mongodb://db:27017
+      - MONGO_URI=mongodb://root:root@db:27017/?authSource=admin
       - DB_NAME=doolar
     depends_on:
       - db
-  
-  whisper-asr:
-    build: 
-      context: ./whisper
-      dockerfile: ./Dockerfile
-    container_name: whisper-asr
-    environment:
-      WHISPER_MODEL: small
-      WHISPER_LANGUAGE: pt
-      WHISPER_DEVICE: cpu
-    ports:
-      - "8000:8000"
-    restart: unless-stopped
-    volumes:
-      - ./whisper/app:/app
-    working_dir: /app
-  
-  ollama:
-    build:
-      context: ./ia-formatter
-      dockerfile: Dockerfile
-    container_name: ollama
-    ports:
-      - "11434:11434"
-    volumes:
-      - ollama_data:/root/.ollama
-    restart: unless-stopped
-
+    tty: true
+    stdin_open: true
 
   db:
     container_name: db
-    image: mongo
+    build: 
+      context: .
+      dockerfile: ./docker/mongo/Dockerfile
     restart: always
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: root
+    volumes:
+      - db-data:/data/db
+    ports:
+      - "27017:27017"
 
   mongo-express:
     image: mongo-express
     restart: always
     ports:
-      - 8081:8081
+      - "8081:8081"
     environment:
-      ME_CONFIG_MONGODB_URL: mongodb://root:root@db:27017/
+      ME_CONFIG_MONGODB_URL: mongodb://root:root@db:27017/?authSource=admin
       ME_CONFIG_BASICAUTH_ENABLED: true
       ME_CONFIG_BASICAUTH_USERNAME: root
       ME_CONFIG_BASICAUTH_PASSWORD: root
+    depends_on:
+      - db
 
 networks:
   default:
@@ -68,4 +51,3 @@ networks:
 
 volumes:
   db-data: {}
-  ollama_data: {}

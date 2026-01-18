@@ -1,5 +1,6 @@
 package dtos
 
 type CreateTaskListDTO struct {
-	Title string
+	Title       string
+	Description string
 }

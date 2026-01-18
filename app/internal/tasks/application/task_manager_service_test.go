@@ -4,7 +4,8 @@ import (
 	"errors"
 	"testing"
 
-	task_list "github.com/gsousadev/doolar2/internal/tasks/domain/entity"
+	"github.com/gsousadev/doolar-golang/internal/tasks/application/dtos"
+	task_list "github.com/gsousadev/doolar-golang/internal/tasks/domain/entity"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -47,7 +48,7 @@ func TestCreateTaskList_Success(t *testing.T) {
 	mockRepo := new(MockTaskListRepository)
 	service := NewTaskManagerService(mockRepo)
 
-	dto := CreateTaskListDTO{
+	dto := dtos.CreateTaskListDTO{
 		Title: "Test List",
 	}
 
@@ -70,7 +71,7 @@ func TestCreateTaskList_AddError(t *testing.T) {
 	mockRepo := new(MockTaskListRepository)
 	service := NewTaskManagerService(mockRepo)
 
-	dto := CreateTaskListDTO{
+	dto := dtos.CreateTaskListDTO{
 		Title: "Test List",
 	}
 
@@ -92,7 +93,7 @@ func TestCreateTaskList_FlushError(t *testing.T) {
 	mockRepo := new(MockTaskListRepository)
 	service := NewTaskManagerService(mockRepo)
 
-	dto := CreateTaskListDTO{
+	dto := dtos.CreateTaskListDTO{
 		Title: "Test List",
 	}
 

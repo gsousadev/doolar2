@@ -1,8 +1,8 @@
 package contracts
 
 import (
-	"github.com/gsousadev/doolar2/internal/tasks/application/dtos"
-	"github.com/gsousadev/doolar2/internal/tasks/domain/entity"
+	"github.com/gsousadev/doolar-golang/internal/tasks/application/dtos"
+	"github.com/gsousadev/doolar-golang/internal/tasks/domain/entity"
 )
 
 type ITaskManagerService interface {

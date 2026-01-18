@@ -10,9 +10,10 @@ import (
 func TestNewTaskList(t *testing.T) {
 	// Arrange
 	title := "My Task List"
+	description := "Descrição de task list"
 
 	// Act
-	taskList := NewTaskListEntity(title)
+	taskList := NewTaskListEntity(title, description)
 
 	// Assert
 	assert.Equal(t, title, taskList.Title, "Expected Title to match")
@@ -22,7 +23,7 @@ func TestNewTaskList(t *testing.T) {
 
 func TestAddTask(t *testing.T) {
 	// Arrange
-	taskList := NewTaskListEntity("Test List")
+	taskList := NewTaskListEntity("Test List", "Descrição de task list")
 	task := NewTaskEntity("Task 1", "Description 1")
 
 	// Act
@@ -35,7 +36,7 @@ func TestAddTask(t *testing.T) {
 
 func TestAddMultipleTasks(t *testing.T) {
 	// Arrange
-	taskList := NewTaskListEntity("Test List")
+	taskList := NewTaskListEntity("Test List", "Descrição de task list")
 	task1 := NewTaskEntity("Task 1", "Description 1")
 	task2 := NewTaskEntity("Task 2", "Description 2")
 	task3 := NewTaskEntity("Task 3", "Description 3")
@@ -54,7 +55,7 @@ func TestAddMultipleTasks(t *testing.T) {
 
 func TestMultipleTypesOfTasks(t *testing.T) {
 	// Arrange
-	taskList := NewTaskListEntity("Mixed Task List")
+	taskList := NewTaskListEntity("Test List", "Descrição de task list")
 	task1 := NewTaskEntity("Simple Task", "A simple task")
 	task2 := NewTimedTaskEntity("Timed Task", "A task with time limit", time.Now(), time.Now().Add(2*time.Hour))
 

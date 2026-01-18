@@ -1,18 +1,22 @@
 package entity
 
-import "github.com/gsousadev/doolar2/internal/shared/domain/entity"
+import (
+	"github.com/gsousadev/doolar-golang/internal/shared/domain/entity"
+)
 
 type TaskListEntity struct {
 	*entity.Entity
-	Title string
-	Tasks []ITask
+	Title       string
+	Description string
+	Tasks       []ITask
 }
 
-func NewTaskListEntity(title string) *TaskListEntity {
+func NewTaskListEntity(title string, description string) *TaskListEntity {
 	return &TaskListEntity{
-		Entity: entity.NewEntity(),
-		Title:  title,
-		Tasks:  []ITask{},
+		Entity:      entity.NewEntity(),
+		Title:       title,
+		Description: description,
+		Tasks:       []ITask{},
 	}
 }
 
